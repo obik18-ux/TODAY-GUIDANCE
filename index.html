@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日のポイント / Today's Guidance</title>
+<style>
+
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  font-family:"Noto Serif JP","Yu Mincho","Hiragino Mincho ProN",serif;
+  color:#eee9df;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(105,82,151,.34), transparent 35%),
+    radial-gradient(circle at 15% 25%, rgba(52,92,130,.20), transparent 28%),
+    linear-gradient(160deg,#090b18 0%,#111226 48%,#090b16 100%);
+  min-height:100vh;
+}
+
+body:before{
+  content:"✦     ·  ˚     ✧       ·     ✦       ˚     ·     ✧";
+  position:fixed;
+  top:20px;
+  left:0;
+  width:100%;
+  text-align:center;
+  color:rgba(235,211,150,.35);
+  letter-spacing:18px;
+  font-size:13px;
+  pointer-events:none;
+}
+
+.container{
+  max-width:980px;
+  margin:0 auto;
+  padding:42px 18px 70px;
+}
+
+h1{
+  text-align:center;
+  font-family:"Shippori Mincho","Yu Mincho",serif;
+  font-size:clamp(28px,5vw,46px);
+  font-weight:500;
+  letter-spacing:.13em;
+  margin:10px 0 8px;
+  color:#f4dfaa;
+  text-shadow:0 2px 18px rgba(225,192,112,.22);
+}
+
+.subtitle{
+  text-align:center;
+  color:#c9bdac;
+  letter-spacing:.22em;
+  font-size:14px;
+  margin-bottom:30px;
+}
+
+.card{
+  position:relative;
+  background:linear-gradient(145deg,rgba(29,30,54,.94),rgba(14,15,31,.94));
+  border:1px solid rgba(211,181,111,.28);
+  border-radius:18px;
+  padding:25px;
+  margin:18px 0;
+  box-shadow:
+    0 14px 45px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.card:before{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border:1px solid rgba(211,181,111,.07);
+  border-radius:13px;
+  pointer-events:none;
+}
+
+h2{
+  font-family:"Shippori Mincho","Yu Mincho",serif;
+  font-size:21px;
+  font-weight:500;
+  letter-spacing:.09em;
+  margin:0 0 16px;
+  color:#e8d39d;
+}
+
+h3{
+  margin:8px 0 13px;
+  font-size:22px;
+  font-weight:500;
+  letter-spacing:.08em;
+  color:#f0e7d5;
+}
+
+/* Language selector */
+.language-bar{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin:0 auto 22px;
+}
+.lang-btn{
+  width:auto;
+  min-width:105px;
+  padding:9px 16px;
+  font-size:14px;
+  letter-spacing:.06em;
+  color:#d8cfbf;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(211,181,111,.28);
+  box-shadow:none;
+}
+.lang-btn.active{
+  color:#f4dfaa;
+  background:rgba(203,171,91,.10);
+  border-color:rgba(242,211,137,.65);
+  text-shadow:0 0 10px rgba(242,211,137,.24);
+}
+
+.input-row{
+  display:flex;
+  gap:13px;
+  align-items:end;
+  flex-wrap:wrap;
+}
+
+label{
+  font-weight:500;
+  display:block;
+  margin-bottom:7px;
+  color:#d6c9b5;
+}
+
+input[type=date]{
+  padding:12px 13px;
+  border:1px solid rgba(211,181,111,.45);
+  border-radius:9px;
+  font-family:inherit;
+  font-size:17px;
+  background:#0b0d1a;
+  color:#eee9df;
+  min-width:190px;
+}
+
+button{
+  border:1px solid rgba(242,211,137,.48);
+  border-radius:10px;
+  padding:13px 23px;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:.08em;
+  cursor:pointer;
+  color:#171421;
+  background:linear-gradient(135deg,#e8ce8d,#b99858);
+  box-shadow:0 5px 18px rgba(0,0,0,.25);
+  transition:.2s;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.08);
+}
+
+.note{
+  font-size:13px;
+  color:#aaa396;
+  line-height:1.8;
+}
+
+.result-head{
+  text-align:center;
+  padding:28px 20px;
+  background:
+    radial-gradient(circle at center,rgba(104,78,151,.25),transparent 58%),
+    linear-gradient(145deg,rgba(30,29,57,.96),rgba(12,14,29,.96));
+}
+
+.result-head h2{
+  font-size:25px;
+  margin-top:14px;
+}
+
+.date-text{
+  font-size:14px;
+  color:#aaa5a0;
+  letter-spacing:.12em;
+}
+
+.zodiac-badge{
+  display:inline-block;
+  margin:10px 0 4px;
+  padding:7px 20px;
+  border:1px solid rgba(220,193,127,.40);
+  border-radius:30px;
+  background:rgba(203,171,91,.09);
+  color:#e7cf98;
+  font-size:15px;
+  letter-spacing:.1em;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-bottom:1px solid rgba(211,181,111,.15);
+  padding-bottom:12px;
+  margin-bottom:18px;
+}
+
+.section-title h2{margin:0}
+
+.icon{
+  font-size:25px;
+  color:#e1c27e;
+}
+
+.tarot-box{text-align:center}
+
+.tarot-box img{
+  width:min(265px,72vw);
+  max-height:430px;
+  object-fit:contain;
+  border-radius:9px;
+  border:1px solid rgba(225,198,130,.28);
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.48),
+    0 0 0 6px rgba(255,255,255,.025);
+  transition:transform .35s;
+}
+
+.tarot-box img.reversed{
+  transform:rotate(180deg);
+}
+
+.position{
+  font-weight:500;
+  font-size:15px;
+  margin:14px 0 5px;
+  color:#d7bf89;
+  letter-spacing:.1em;
+}
+
+.advice{
+  background:linear-gradient(135deg,rgba(240,222,180,.06),rgba(120,101,154,.07));
+  border-left:3px solid #b99a5b;
+  padding:14px 16px;
+  border-radius:5px;
+  line-height:1.9;
+  color:#ddd6ca;
+}
+
+.final{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(177,143,72,.15),transparent 45%),
+    linear-gradient(145deg,rgba(39,34,50,.98),rgba(17,17,30,.98));
+  border:1px solid rgba(224,190,109,.55);
+  text-align:center;
+  padding:32px 24px;
+}
+
+.final h2{
+  font-size:18px;
+  color:#d9c28e;
+}
+
+.final-key{
+  font-family:"Shippori Mincho","Yu Mincho",serif;
+  font-size:clamp(31px,6vw,48px);
+  font-weight:600;
+  letter-spacing:.15em;
+  margin:13px 0 17px;
+  color:#f0d38e;
+  text-shadow:0 2px 22px rgba(224,191,99,.22);
+}
+
+.final-text{
+  max-width:720px;
+  margin:0 auto;
+  font-size:17px;
+  line-height:2;
+  color:#e4ded4;
+}
+
+.common{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:22px;
+}
+
+.common div{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(211,181,111,.13);
+  border-radius:10px;
+  padding:12px 8px;
+  color:#c9c1b4;
+  line-height:1.8;
+}
+
+.common b{
+  color:#d9bf83;
+  font-weight:500;
+}
+
+.small{
+  font-size:13px;
+  color:#9e9a94;
+}
+
+.hidden{display:none}
+
+@media(max-width:700px){
+  .container{padding:30px 10px 50px}
+  h1{font-size:27px;letter-spacing:.08em}
+  .subtitle{font-size:12px;letter-spacing:.14em}
+  .grid{grid-template-columns:1fr}
+  .common{grid-template-columns:1fr}
+  .card{padding:20px 16px;border-radius:15px}
+  .input-row>div{width:100%}
+  input[type=date]{width:100%}
+  button{width:100%}
+  .tarot-box img{max-height:400px}
+  .final-text{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>今日のポイント</h1>
+<div class="subtitle" id="subtitle">タロット × 星座占い × 四柱推命</div>
+<div class="language-bar">
+  <button class="lang-btn active" id="jaBtn" onclick="setLanguage('ja')">日本語</button>
+  <button class="lang-btn" id="enBtn" onclick="setLanguage('en')">English</button>
+</div>
+
+<div class="card">
+  <h2>あなたの生年月日</h2>
+  <div class="input-row">
+    <div>
+      <label for="birth">生年月日</label>
+      <input id="birth" type="date">
+    </div>
+    <button onclick="startReading()">今日の注意点を見る</button>
+  </div>
+  <p class="note">生年月日から星座と四柱推命の基本情報を計算し、今日の注意点を表示します。</p>
+</div>
+
+<div id="results" class="hidden">
+
+<div class="card result-head">
+  <div class="date-text" id="todayText"></div>
+  <div class="zodiac-badge" id="zodiacBadge"></div>
+  <h2>今日のあなたが気を付けること</h2>
+</div>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="section-title"><span class="icon">🔮</span><h2>タロット</h2></div>
+    <div class="tarot-box">
+      <img id="tarotImage" alt="タロットカード">
+      <div class="position" id="tarotPosition"></div>
+      <h3 id="tarotName"></h3>
+      <div class="advice" id="tarotAdvice"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><span class="icon">✦</span><h2>星座ホロスコープ</h2></div>
+    <h3 id="zodiacTitle"></h3>
+    <div class="advice" id="zodiacAdvice"></div>
+  </div>
+
+</div>
+
+<div class="card">
+  <div class="section-title"><span class="icon">☯</span><h2>四柱推命</h2></div>
+  <p id="pillarsText"></p>
+  <div class="advice" id="pillarAdvice"></div>
+</div>
+
+<div class="card final">
+  <h2>★★★ 3つの占いから見る今日のポイント ★★★</h2>
+  <div class="small">3つの占いに共通するテーマ</div>
+  <div class="final-key" id="finalKey"></div>
+  <div class="final-text" id="finalText"></div>
+
+  <div class="common">
+    <div><b>タロット</b><br><span id="commonTarot"></span></div>
+    <div><b>星座</b><br><span id="commonZodiac"></span></div>
+    <div><b>四柱推命</b><br><span id="commonPillar"></span></div>
+  </div>
+</div>
+
+<div class="card">
+  <button onclick="startReading()">もう一度占う</button>
+</div>
+
+</div>
+</div>
+
+<script>
+/* =========================================================
+   22枚の大アルカナ
+   現在のSHIN-TAROTOTOで使用している画像名を使用
+========================================================= */
+const tarotCards = [
+ {name:"愚者",file:"The_Fool_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"勢いだけで始めない。確認してから行動する。",
+  reversed:"無計画な行動に注意。今日は一度立ち止まる。"},
+ {name:"魔術師",file:"The_Magician_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"言葉や行動を急ぎすぎない。準備を確認する。",
+  reversed:"口先だけにならないよう注意。約束は慎重に。"},
+ {name:"女教皇",file:"The_High_Priestess_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"直感を大切にしつつ、決断は急がない。",
+  reversed:"思い込みに注意。聞いた情報をそのまま信じない。"},
+ {name:"女帝",file:"The_Empress_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"世話をしすぎない。相手にも任せる余裕を。",
+  reversed:"甘やかしすぎや、浪費に注意。"},
+ {name:"皇帝",file:"The_Emperor_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"自分の考えを押し通しすぎない。",
+  reversed:"強引な態度に注意。相手の意見も聞く。"},
+ {name:"法王",file:"The_Hierophant_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"慣れた方法を大切にし、独断を避ける。",
+  reversed:"古い考えに固執しない。柔軟に考える。"},
+ {name:"恋人",file:"The_Lovers_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"その場の感情だけで決めない。",
+  reversed:"迷ったまま返事を急がない。"},
+ {name:"戦車",file:"The_Chariot_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"急ぎすぎない。目的を確認してから進む。",
+  reversed:"焦りや強引さに注意。速度を落とす。"},
+ {name:"力",file:"Strength_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"感情を抑え込まず、穏やかに伝える。",
+  reversed:"イライラを人にぶつけない。"},
+ {name:"隠者",file:"The_Hermit_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"一人で考える時間を取る。ただし閉じこもりすぎない。",
+  reversed:"考えすぎに注意。必要なら人に相談する。"},
+ {name:"運命の輪",file:"Wheel_of_Fortune_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"予定変更に慌てない。流れの変化に対応する。",
+  reversed:"タイミングを無理に変えようとしない。"},
+ {name:"正義",file:"Justice_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"感情ではなく事実を確認して判断する。",
+  reversed:"偏った判断に注意。双方の話を聞く。"},
+ {name:"吊るされた男",file:"The_Hanged_Man_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"すぐに結果を求めない。待つことも選択肢。",
+  reversed:"無理に我慢し続けない。見方を変える。"},
+ {name:"死神",file:"Death_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"終わったことに執着しない。切り替えを意識する。",
+  reversed:"変えるべきことを先延ばししない。"},
+ {name:"節制",file:"Temperance_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"やりすぎない。仕事と休息のバランスを取る。",
+  reversed:"生活のペースが乱れやすい。無理をしない。"},
+ {name:"悪魔",file:"The_Devil_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"欲や習慣に流されない。衝動買いにも注意。",
+  reversed:"悪い習慣を断つきっかけにする。"},
+ {name:"塔",file:"The_Tower_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"突然の変更に備える。感情的な反応を避ける。",
+  reversed:"小さな問題を放置しない。早めに対処する。"},
+ {name:"星",file:"The_Star_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"期待しすぎず、現実的な一歩を大切にする。",
+  reversed:"悲観しすぎない。小さな進展を見落とさない。"},
+ {name:"月",file:"The_Moon_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"不確かな情報で決めない。確認を大切にする。",
+  reversed:"不安を膨らませすぎない。事実を確認する。"},
+ {name:"太陽",file:"The_Sun_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"気分が良くても油断しない。確認を忘れない。",
+  reversed:"無理に明るく振る舞わない。休むことも大切。"},
+ {name:"審判",file:"Judgement_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"過去の判断を見直す。早まった結論を避ける。",
+  reversed:"過去にとらわれすぎない。"},
+ {name:"世界",file:"The_World_(Rider-Waite_Smith_tarot_deck).png",
+  upright:"最後まで丁寧に確認する。終わったと思って油断しない。",
+  reversed:"中途半端なまま次へ進まない。"}
+];
+
+const zodiacData = [
+ {name:"おひつじ座",start:[3,21],end:[4,19],
+  advice:"急いで結論を出さないこと。特に人との会話では、最後まで相手の話を聞きましょう。",key:"急がない"},
+ {name:"おうし座",start:[4,20],end:[5,20],
+  advice:"自分のペースを守ること。変化を嫌って必要な対応まで遅らせないよう注意しましょう。",key:"固執しない"},
+ {name:"ふたご座",start:[5,21],end:[6,21],
+  advice:"情報を一度整理すること。聞いた話を確認せずに人へ伝えないようにしましょう。",key:"確認する"},
+ {name:"かに座",start:[6,22],end:[7,22],
+  advice:"感情だけで判断しないこと。相手の言葉を悪い意味に受け取りすぎないようにしましょう。",key:"受け止める"},
+ {name:"しし座",start:[7,23],end:[8,22],
+  advice:"自分の正しさを押し通しすぎないこと。今日は一歩引いて周囲を見る余裕を持ちましょう。",key:"譲る"},
+ {name:"おとめ座",start:[8,23],end:[9,22],
+  advice:"細部にこだわりすぎないこと。完璧を求めて予定を遅らせないようにしましょう。",key:"ほどほどに"},
+ {name:"てんびん座",start:[9,23],end:[10,23],
+  advice:"周囲に合わせすぎないこと。自分に必要なことを一つ決めて行動しましょう。",key:"自分で決める"},
+ {name:"さそり座",start:[10,24],end:[11,22],
+  advice:"一つのことを深く考えすぎないこと。分からないことは確認して前へ進みましょう。",key:"考えすぎない"},
+ {name:"いて座",start:[11,23],end:[12,21],
+  advice:"勢いで約束を増やさないこと。今日できることと後日に回すことを分けましょう。",key:"広げすぎない"},
+ {name:"やぎ座",start:[12,22],end:[1,19],
+  advice:"責任を一人で抱え込まないこと。必要なことは周囲に頼みましょう。",key:"抱え込まない"},
+ {name:"みずがめ座",start:[1,20],end:[2,18],
+  advice:"自分の考えだけで決めないこと。今日は身近な人の意見にも耳を傾けましょう。",key:"聞く"},
+ {name:"うお座",start:[2,19],end:[3,20],
+  advice:"気分に左右されすぎないこと。重要な判断は落ち着いてから行いましょう。",key:"落ち着く"}
+];
+
+function zodiacFor(date){
+  const m=date.getMonth()+1,d=date.getDate();
+  for(const z of zodiacData){
+    if(z.name==="やぎ座"){
+      if((m===12&&d>=22)||(m===1&&d<=19)) return z;
+    }else{
+      const [sm,sd]=z.start,[em,ed]=z.end;
+      if((m===sm&&d>=sd)||(m===em&&d<=ed)||
+         (sm<em&&m>sm&&m<em)) return z;
+    }
+  }
+  return zodiacData[0];
+}
+
+function jdn(date){
+  const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
+  const a=Math.floor((14-m)/12), y2=y+4800-a, m2=m+12*a-3;
+  return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)
+    -Math.floor(y2/100)+Math.floor(y2/400)-32045;
+}
+
+const stems=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const branches=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const animals=["ねずみ","うし","とら","うさぎ","たつ","へび","うま","ひつじ","さる","とり","いぬ","いのしし"];
+
+function sexagenaryDay(date){
+  // 2000-01-07を甲子日(0)とする基準
+  return (jdn(date)-jdn(new Date(2000,0,7))+60)%60;
+}
+
+function yearPillar(date){
+  // 四柱推命の年柱は立春付近で切り替わるため、ここでは簡易的に2月4日を境界とする
+  let y=date.getFullYear();
+  if(date.getMonth()+1<2 || (date.getMonth()+1===2&&date.getDate()<4)) y--;
+  const i=((y-4)%60+60)%60;
+  return {stem:stems[i%10],branch:branches[i%12],animal:animals[i%12],animalIndex:i%12};
+}
+
+function simplePillarAdvice(dayIndex,zodiac){
+  const branch=branches[dayIndex%12];
+  const stem=stems[dayIndex%10];
+  const themes=[
+    ["確認","細かな確認を省略しないこと。"],
+    ["焦らない","結果を急がず、順番を守ること。"],
+    ["言葉","強い言い方を避け、丁寧に伝えること。"],
+    ["休む","無理を続けず、適度に休むこと。"],
+    ["整理","先に優先順位を決めること。"],
+    ["対話","一人で決めず、必要なら相談すること。"]
+  ];
+  const t=themes[(dayIndex+zodiac.name.length)%themes.length];
+  return {
+    text:`今日の日柱は「${stem}${branch}」です。今日のテーマは「${t[0]}」。`,
+    advice:t[1]
+  };
+}
+
+function tarotImage(card){
+  return "https://commons.wikimedia.org/wiki/Special:FilePath/"
+    + encodeURIComponent(card.file) + "?width=500";
+}
+
+function chooseTarot(){
+  const card=tarotCards[Math.floor(Math.random()*tarotCards.length)];
+  const reversed=Math.random()<0.5;
+  return {card,reversed};
+}
+
+
+
+const englishTarotNames = {
+  "愚者":"The Fool",
+  "魔術師":"The Magician",
+  "女教皇":"The High Priestess",
+  "女帝":"The Empress",
+  "皇帝":"The Emperor",
+  "法王":"The Hierophant",
+  "恋人":"The Lovers",
+  "戦車":"The Chariot",
+  "力":"Strength",
+  "隠者":"The Hermit",
+  "運命の輪":"Wheel of Fortune",
+  "正義":"Justice",
+  "吊るされた男":"The Hanged Man",
+  "死神":"Death",
+  "節制":"Temperance",
+  "悪魔":"The Devil",
+  "塔":"The Tower",
+  "星":"The Star",
+  "月":"The Moon",
+  "太陽":"The Sun",
+  "審判":"Judgement",
+  "世界":"The World"
+};
+
+const englishStems = ["Jia","Yi","Bing","Ding","Wu","Ji","Geng","Xin","Ren","Gui"];
+const englishBranches = ["Zi","Chou","Yin","Mao","Chen","Si","Wu","Wei","Shen","You","Xu","Hai"];
+const englishAnimals = ["Rat","Ox","Tiger","Rabbit","Dragon","Snake","Horse","Goat","Monkey","Rooster","Dog","Pig"];
+
+function englishPillarName(stemIndex,branchIndex){
+  return `${englishStems[stemIndex]}-${englishBranches[branchIndex]}`;
+}
+
+const I18N = {
+  ja:{
+    title:"今日のポイント",
+    subtitle:"タロット × 星座占い × 四柱推命",
+    birthTitle:"あなたの生年月日",
+    birthLabel:"生年月日",
+    button:"今日の注意点を見る",
+    note:"生年月日から星座と四柱推命の基本情報を計算し、今日の注意点を表示します。",
+    tarot:"タロット",
+    horoscope:"星座占い",
+    fourpillars:"四柱推命",
+    todayNotice:"今日のポイント",
+    todayAttention:"",
+    positionUpright:"正位置",
+    positionReversed:"逆位置",
+    commonTitle:"★★★ 3つの占いから見る今日のポイント ★★★",
+    commonSub:"3つの占いに共通するテーマ",
+    tarotCommon:"タロット",
+    zodiacCommon:"星座",
+    pillarCommon:"四柱推命",
+    repeat:"もう一度占う",
+    enterBirth:"生年月日を入力してください。",
+    yearText:"年",
+    monthText:"月",
+    dayText:"日の注意点",
+    pillarPrefix:"あなたの生年は「",
+    pillarMiddle:"」です。今日の日柱は「",
+    pillarSuffix:"」。"
+  },
+  en:{
+    title:"Today's Guidance",
+    subtitle:"Tarot × Zodiac Horoscope × Four Pillars of Destiny",
+    birthTitle:"Your Date of Birth",
+    birthLabel:"Date of Birth",
+    button:"See Today's Guidance",
+    note:"Your zodiac sign and basic Four Pillars of Destiny information are calculated from your date of birth.",
+    tarot:"Tarot",
+    horoscope:"Zodiac Horoscope",
+    fourpillars:"Four Pillars of Destiny",
+    todayNotice:"Today's Guidance",
+    todayAttention:"",
+    positionUpright:"Upright",
+    positionReversed:"Reversed",
+    commonTitle:"★★★ Today's Key Point from Three Readings ★★★",
+    commonSub:"The common theme from the three readings",
+    tarotCommon:"Tarot",
+    zodiacCommon:"Horoscope",
+    pillarCommon:"Four Pillars of Destiny",
+    repeat:"Read Again",
+    enterBirth:"Please enter your date of birth.",
+    yearText:"",
+    monthText:"",
+    dayText:"",
+    pillarPrefix:"",
+    pillarMiddle:"",
+    pillarSuffix:""
+  }
+};
+
+let currentLanguage="ja";
+let currentTarotReading=null;
+
+function setLanguage(lang){
+  currentLanguage=lang;
+  const t=I18N[lang];
+
+  document.documentElement.lang=lang;
+
+  document.querySelector("h1").textContent=t.title;
+  document.getElementById("subtitle").textContent=t.subtitle;
+
+  const firstCard=document.querySelector("#birth").closest(".card");
+  firstCard.querySelector("h2").textContent=t.birthTitle;
+  firstCard.querySelector("label").textContent=t.birthLabel;
+  firstCard.querySelector("button").textContent=t.button;
+  firstCard.querySelector(".note").textContent=t.note;
+
+  document.querySelectorAll(".section-title h2")[0].textContent=t.tarot;
+  document.querySelectorAll(".section-title h2")[1].textContent=t.horoscope;
+  document.querySelectorAll(".section-title h2")[2].textContent=t.fourpillars;
+
+
+  document.querySelector(".final h2").textContent=t.commonTitle;
+  document.querySelector(".final .small").textContent=t.commonSub;
+
+  const commonLabels=document.querySelectorAll(".common b");
+  commonLabels[0].textContent=t.tarotCommon;
+  commonLabels[1].textContent=t.zodiacCommon;
+  commonLabels[2].textContent=t.pillarCommon;
+
+  document.querySelectorAll("#results .card:last-child button").forEach(b=>b.textContent=t.repeat);
+
+  document.getElementById("jaBtn").classList.toggle("active",lang==="ja");
+  document.getElementById("enBtn").classList.toggle("active",lang==="en");
+
+  // Refresh current result text in the selected language.
+  if(!document.getElementById("results").classList.contains("hidden")){
+    refreshDisplayedReading();
+  }
+}
+
+function refreshDisplayedReading(){
+  const t=I18N[currentLanguage];
+  const input=document.getElementById("birth").value;
+  if(!input)return;
+
+  const parts=input.split("-");
+  const birth=new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]));
+  const today=new Date();
+  const zodiac=zodiacFor(birth);
+  const dayIndex=sexagenaryDay(today);
+  const yp=yearPillar(birth);
+  const pp=simplePillarAdvice(dayIndex,zodiac);
+
+  // Keep the already-selected tarot card and orientation across language changes.
+  const card=(currentTarotReading && currentTarotReading.card) || tarotCards[0];
+  const reversed=!!(currentTarotReading && currentTarotReading.reversed);
+
+  document.getElementById("todayText").textContent =
+    currentLanguage==="ja"
+      ? `${today.getFullYear()}${t.yearText}${today.getMonth()+1}${t.monthText}${today.getDate()}${t.dayText}`
+      : `${today.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})} — Today's Guidance`;
+
+  document.getElementById("zodiacBadge").textContent=
+    currentLanguage==="ja" ? zodiac.name : englishZodiacName(zodiac.name);
+
+  document.querySelector("#results .result-head h2").textContent=t.todayNotice;
+
+  document.getElementById("tarotPosition").textContent=
+    reversed?t.positionReversed:t.positionUpright;
+
+  document.getElementById("tarotName").textContent=
+    currentLanguage==="ja" ? card.name : englishTarotNames[card.name];
+  document.getElementById("tarotImage").alt=
+    (currentLanguage==="ja" ? card.name : englishTarotNames[card.name]) +
+    (reversed ? " — " + t.positionReversed : " — " + t.positionUpright);
+
+  document.getElementById("tarotAdvice").textContent=
+    currentLanguage==="ja"
+      ? (reversed?card.reversed:card.upright)
+      : englishTarotAdvice(card,reversed);
+
+  document.getElementById("zodiacTitle").textContent=
+    currentLanguage==="ja" ? zodiac.name : englishZodiacName(zodiac.name);
+  document.getElementById("zodiacAdvice").textContent=
+    currentLanguage==="ja" ? zodiac.advice : englishZodiacAdvice(zodiac);
+
+  document.getElementById("pillarsText").textContent=
+    currentLanguage==="ja"
+      ? `${t.pillarPrefix}${yp.stem}${yp.branch}（${yp.animal}）${t.pillarMiddle}${stems[dayIndex%10]}${branches[dayIndex%12]}${t.pillarSuffix}`
+      : `Birth Year Pillar: ${englishPillarName(stems.indexOf(yp.stem),branches.indexOf(yp.branch))} — ${englishAnimals[yp.animalIndex]}. Today's Day Pillar: ${englishPillarName(dayIndex%10,dayIndex%12)}.`;
+
+  document.getElementById("pillarAdvice").textContent=
+    currentLanguage==="ja" ? pp.advice : englishPillarAdvice(pp);
+
+  const finalKey=document.getElementById("finalKey");
+  const existingKey=finalKey.dataset.jaKey || finalKey.textContent;
+  finalKey.textContent=currentLanguage==="ja"
+    ? existingKey
+    : englishKey(existingKey);
+  finalKey.dataset.jaKey=existingKey;
+
+  document.getElementById("finalText").textContent=
+    currentLanguage==="ja"
+      ? document.getElementById("finalText").dataset.jaText || document.getElementById("finalText").textContent
+      : englishCombined(dayIndex,card.name,zodiac.name);
+
+  document.getElementById("commonTarot").textContent=
+    currentLanguage==="ja" ? "落ち着いた確認" : "Calm checking";
+  document.getElementById("commonZodiac").textContent=
+    currentLanguage==="ja" ? zodiac.key : englishKey(zodiac.key);
+  document.getElementById("commonPillar").textContent=
+    currentLanguage==="ja" ? pp.advice.split("。")[0] : englishPillarShort(pp);
+}
+
+function englishTarotAdvice(card,reversed){
+  const m={
+    "愚者":reversed?"Avoid acting without a plan. Pause before you move.":"Do not rush into something new. Check your plan first.",
+    "魔術師":reversed?"Be careful not to rely on words alone. Keep promises realistic.":"Do not rush your words or actions. Check your preparation.",
+    "女教皇":reversed?"Watch out for assumptions. Verify information before trusting it.":"Trust your intuition, but do not rush a decision.",
+    "女帝":reversed?"Avoid overindulgence or unnecessary spending.":"Do not take care of everyone too much. Leave room for others.",
+    "皇帝":reversed?"Avoid being forceful. Listen to other opinions.":"Do not push your own view too strongly.",
+    "法王":reversed?"Do not cling to old ideas. Stay flexible.":"Use familiar methods and avoid acting alone.",
+    "恋人":reversed?"Do not rush a reply while you are still unsure.":"Do not decide based only on emotion.",
+    "戦車":reversed?"Watch out for haste or forcefulness. Slow down.":"Do not rush. Confirm your direction before moving ahead.",
+    "力":reversed?"Do not take irritation out on others.":"Express your feelings calmly rather than suppressing them.",
+    "隠者":reversed?"Do not overthink. Ask someone for advice if needed.":"Take time to think, but do not isolate yourself.",
+    "運命の輪":reversed?"Do not force the timing.":"Do not panic over changes. Adapt to the flow.",
+    "正義":reversed?"Avoid one-sided judgments. Hear both sides.":"Judge by facts rather than emotion.",
+    "吊るされた男":reversed?"Do not keep enduring something unnecessarily. Change your perspective.":"Do not demand immediate results. Waiting can be useful.",
+    "死神":reversed?"Do not postpone a change that is needed.":"Do not cling to what has ended. Be ready to move on.",
+    "節制":reversed?"Your pace may become unbalanced. Do not overdo it.":"Avoid doing too much. Keep work and rest balanced.",
+    "悪魔":reversed?"Use today as a chance to break an unhealthy habit.":"Do not let desire or habit control you. Watch impulse spending.",
+    "塔":reversed?"Do not ignore small problems. Deal with them early.":"Be ready for sudden changes. Avoid emotional reactions.",
+    "星":reversed?"Do not become overly pessimistic. Notice small progress.":"Do not expect too much. Focus on one realistic step.",
+    "月":reversed?"Do not let anxiety grow. Check the facts.":"Do not decide from uncertain information. Verify first.",
+    "太陽":reversed?"Do not force yourself to appear cheerful. Rest when needed.":"Even when things feel good, do not become careless. Check the details.",
+    "審判":reversed?"Do not remain trapped by the past.":"Review past decisions and avoid rushing to conclusions.",
+    "世界":reversed?"Do not move on while something remains unfinished.":"Check the final details carefully before considering something complete."
+  };
+  return m[card.name] || "Take a moment to pause and check before acting.";
+}
+
+function englishZodiacName(name){
+  return {"おひつじ座":"Aries","おうし座":"Taurus","ふたご座":"Gemini","かに座":"Cancer",
+  "しし座":"Leo","おとめ座":"Virgo","てんびん座":"Libra","さそり座":"Scorpio",
+  "いて座":"Sagittarius","やぎ座":"Capricorn","みずがめ座":"Aquarius","うお座":"Pisces"}[name]||name;
+}
+
+function englishZodiacAdvice(z){
+  const m={
+    "おひつじ座":"Do not rush to conclusions. Listen to others until they finish speaking.",
+    "おうし座":"Keep your own pace, but do not delay necessary responses to change.",
+    "ふたご座":"Organize information before passing it on. Verify what you hear.",
+    "かに座":"Do not decide from emotion alone. Avoid reading too much into other people's words.",
+    "しし座":"Do not insist on being right. Give yourself room to step back.",
+    "おとめ座":"Do not become too focused on details. Avoid delaying things by seeking perfection.",
+    "てんびん座":"Do not adapt to everyone too much. Decide one thing that matters to you.",
+    "さそり座":"Do not overthink one issue. Confirm what you do not know and move forward.",
+    "いて座":"Do not make too many promises on impulse. Separate today's tasks from later ones.",
+    "やぎ座":"Do not carry every responsibility alone. Ask others for help when needed.",
+    "みずがめ座":"Do not decide only from your own viewpoint. Listen to people close to you.",
+    "うお座":"Do not let your mood control important decisions. Wait until you are calm."
+  };
+  return m[z.name]||z.advice;
+}
+
+function englishPillarAdvice(pp){
+  return pp.advice
+    .replace("細かな確認を省略しないこと。","Do not skip small checks.")
+    .replace("結果を急がず、順番を守ること。","Do not rush results; follow the proper order.")
+    .replace("強い言い方を避け、丁寧に伝えること。","Avoid harsh wording and communicate calmly.")
+    .replace("無理を続けず、適度に休むこと。","Do not overdo it. Take appropriate breaks.")
+    .replace("先に優先順位を決めること。","Set priorities before you begin.")
+    .replace("一人で決めず、必要なら相談すること。","Do not decide everything alone; ask for advice when needed.");
+}
+
+function englishPillarShort(pp){
+  return englishPillarAdvice(pp).split(".")[0];
+}
+
+function englishKey(k){
+  return {
+    "確認する":"Check first","急がない":"Do not rush","言葉に注意":"Watch your words",
+    "力を抜く":"Relax","思い込みに注意":"Avoid assumptions","慎重にする":"Be cautious",
+    "固執しない":"Stay flexible","受け止める":"Stay open","譲る":"Give way",
+    "ほどほどに":"Keep it balanced","自分で決める":"Decide for yourself",
+    "考えすぎない":"Do not overthink","広げすぎない":"Do not overextend",
+    "抱え込まない":"Do not carry it alone","聞く":"Listen","落ち着く":"Stay calm"
+  }[k]||k;
+}
+
+function englishCombined(dayIndex,cardName,zodiacName){
+  const arr=[
+    "Today, do not rush to an answer. Check the situation once before you act.",
+    "Today, use calmer words and attitudes to avoid unnecessary misunderstandings.",
+    "Today, follow the proper order instead of rushing. Handle one thing at a time.",
+    "Today, do not carry everything alone. Ask for help when you need it.",
+    "Today, check the facts before making a decision based on assumptions."
+  ];
+  return arr[(dayIndex+cardName.length+zodiacName.length)%arr.length];
+}
+
+
+function startReading(){
+  const input=document.getElementById("birth").value;
+  if(!input){alert(I18N[currentLanguage].enterBirth);return;}
+  const parts=input.split("-");
+  const birth=new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]));
+  const today=new Date();
+  const zodiac=zodiacFor(birth);
+  const tarot=chooseTarot();
+  currentTarotReading=tarot;
+  const dayIndex=sexagenaryDay(today);
+  const yp=yearPillar(birth);
+  const pp=simplePillarAdvice(dayIndex,zodiac);
+
+  document.getElementById("results").classList.remove("hidden");
+  document.getElementById("todayText").textContent=
+    `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日の注意点`;
+  document.getElementById("zodiacBadge").textContent=zodiac.name;
+
+  const img=document.getElementById("tarotImage");
+  img.src=tarotImage(tarot.card);
+  img.classList.toggle("reversed",tarot.reversed);
+  img.alt=tarot.card.name+(tarot.reversed?"・逆位置":"・正位置");
+  document.getElementById("tarotPosition").textContent=tarot.reversed?"逆位置":"正位置";
+  document.getElementById("tarotName").textContent=tarot.card.name;
+  document.getElementById("tarotAdvice").textContent=
+    tarot.reversed?tarot.card.reversed:tarot.card.upright;
+
+  document.getElementById("zodiacTitle").textContent=zodiac.name;
+  document.getElementById("zodiacAdvice").textContent=zodiac.advice;
+
+  document.getElementById("pillarsText").textContent=
+    `あなたの生年は「${yp.stem}${yp.branch}（${yp.animal}）」です。`+
+    ` 今日の日柱は「${stems[dayIndex%10]}${branches[dayIndex%12]}」。`;
+  document.getElementById("pillarAdvice").textContent=pp.advice;
+
+  const tarotKey = tarot.reversed ? "慎重にする" :
+    ["確認する","急がない","言葉に注意","力を抜く","思い込みに注意"][tarot.card.name.length%5];
+  const keys=[tarotKey,zodiac.key,pp.advice.split("。")[0]];
+  const counts={};
+  keys.forEach(k=>counts[k]=(counts[k]||0)+1);
+  let finalKey=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+
+  const combined=[
+    "今日は、すぐに答えを出さず、一度確認してから行動することを意識しましょう。",
+    "今日は、言葉や態度を少し穏やかにすることで、余計な行き違いを避けやすいでしょう。",
+    "今日は、焦って物事を進めるより、順番を守って一つずつ片付けることを意識しましょう。",
+    "今日は、自分だけで抱え込まず、必要なことは周囲に相談することを意識しましょう。",
+    "今日は、思い込みで判断せず、事実を確かめてから決めることを意識しましょう。"
+  ];
+  const finalText=combined[(dayIndex+tarot.card.name.length+zodiac.name.length)%combined.length];
+
+  document.getElementById("finalKey").textContent=finalKey;
+  document.getElementById("finalKey").dataset.jaKey=finalKey;
+  document.getElementById("finalText").dataset.jaText=finalText;
+  document.getElementById("finalText").textContent=finalText;
+  document.getElementById("commonTarot").textContent=
+    tarot.reversed?"慎重な行動":"落ち着いた確認";
+  document.getElementById("commonZodiac").textContent=zodiac.key;
+  document.getElementById("commonPillar").textContent=pp.advice.split("。")[0];
+
+  refreshDisplayedReading();
+  setTimeout(()=>document.getElementById("results").scrollIntoView({behavior:"smooth"}),100);
+}
+
+window.addEventListener("load",()=>{
+  const d=new Date();
+  const y=d.getFullYear()-50;
+  document.getElementById("birth").value=
+    `${y}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+});
+</script>
+</body>
+</html>
