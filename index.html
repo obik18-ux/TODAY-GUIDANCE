@@ -342,6 +342,7 @@ button:hover{
 
 <h1>今日のポイント</h1>
 <div class="subtitle" id="subtitle">タロット × 星座占い × 四柱推命</div>
+<div class="today-date" id="todayDate"></div>
 <div class="language-bar">
   <button class="lang-btn active" id="jaBtn" onclick="setLanguage('ja')">日本語</button>
   <button class="lang-btn" id="enBtn" onclick="setLanguage('en')">English</button>
@@ -356,7 +357,7 @@ button:hover{
     </div>
     <button onclick="startReading()">今日の注意点を見る</button>
   </div>
-  <p class="note">生年月日から星座と四柱推命の基本情報を計算し、今日の注意点を表示します。</p>
+  <p class="note">生年月日と今日の日付をもとに、タロット・星座・四柱推命の3つを組み合わせて、今日のポイントを提案します。</p>
 </div>
 
 <div id="results" class="hidden">
@@ -488,30 +489,18 @@ const tarotCards = [
 ];
 
 const zodiacData = [
- {name:"おひつじ座",start:[3,21],end:[4,19],
-  advice:"急いで結論を出さないこと。特に人との会話では、最後まで相手の話を聞きましょう。",key:"急がない"},
- {name:"おうし座",start:[4,20],end:[5,20],
-  advice:"自分のペースを守ること。変化を嫌って必要な対応まで遅らせないよう注意しましょう。",key:"固執しない"},
- {name:"ふたご座",start:[5,21],end:[6,21],
-  advice:"情報を一度整理すること。聞いた話を確認せずに人へ伝えないようにしましょう。",key:"確認する"},
- {name:"かに座",start:[6,22],end:[7,22],
-  advice:"感情だけで判断しないこと。相手の言葉を悪い意味に受け取りすぎないようにしましょう。",key:"受け止める"},
- {name:"しし座",start:[7,23],end:[8,22],
-  advice:"自分の正しさを押し通しすぎないこと。今日は一歩引いて周囲を見る余裕を持ちましょう。",key:"譲る"},
- {name:"おとめ座",start:[8,23],end:[9,22],
-  advice:"細部にこだわりすぎないこと。完璧を求めて予定を遅らせないようにしましょう。",key:"ほどほどに"},
- {name:"てんびん座",start:[9,23],end:[10,23],
-  advice:"周囲に合わせすぎないこと。自分に必要なことを一つ決めて行動しましょう。",key:"自分で決める"},
- {name:"さそり座",start:[10,24],end:[11,22],
-  advice:"一つのことを深く考えすぎないこと。分からないことは確認して前へ進みましょう。",key:"考えすぎない"},
- {name:"いて座",start:[11,23],end:[12,21],
-  advice:"勢いで約束を増やさないこと。今日できることと後日に回すことを分けましょう。",key:"広げすぎない"},
- {name:"やぎ座",start:[12,22],end:[1,19],
-  advice:"責任を一人で抱え込まないこと。必要なことは周囲に頼みましょう。",key:"抱え込まない"},
- {name:"みずがめ座",start:[1,20],end:[2,18],
-  advice:"自分の考えだけで決めないこと。今日は身近な人の意見にも耳を傾けましょう。",key:"聞く"},
- {name:"うお座",start:[2,19],end:[3,20],
-  advice:"気分に左右されすぎないこと。重要な判断は落ち着いてから行いましょう。",key:"落ち着く"}
+ {name:"おひつじ座",start:[3,21],end:[4,19],advice:"急いで結論を出さないこと。特に人との会話では、最後まで相手の話を聞きましょう。",variants:["急いで結論を出さないこと。特に人との会話では、最後まで相手の話を聞きましょう。", "急いで結論を出さないこと。今日は一つずつ進めましょう。特に人との会話では、最後まで相手の話を聞きましょう。", "急いで結論を出さないこと。焦って結論を出さないようにしましょう。特に人との会話では、最後まで相手の話を聞きましょう。", "急いで結論を出さないこと。必要なら一度立ち止まって確認しましょう。特に人との会話では、最後まで相手の話を聞きましょう。", "急いで結論を出さないこと。相手の話や周囲の状況も見ながら判断しましょう。特に人との会話では、最後まで相手の話を聞きましょう。", "急いで結論を出さないこと。無理のない範囲で実行しましょう。特に人との会話では、最後まで相手の話を聞きましょう。"],key:"急がない"},
+ {name:"おうし座",start:[4,20],end:[5,20],advice:"自分のペースを守ること。変化を嫌って必要な対応まで遅らせないよう注意しましょう。",variants:["自分のペースを守ること。変化を嫌って必要な対応まで遅らせないよう注意しましょう。", "自分のペースを守ること。今日は一つずつ進めましょう。変化を嫌って必要な対応まで遅らせないよう注意しましょう。", "自分のペースを守ること。焦って結論を出さないようにしましょう。変化を嫌って必要な対応まで遅らせないよう注意しましょう。", "自分のペースを守ること。必要なら一度立ち止まって確認しましょう。変化を嫌って必要な対応まで遅らせないよう注意しましょう。", "自分のペースを守ること。相手の話や周囲の状況も見ながら判断しましょう。変化を嫌って必要な対応まで遅らせないよう注意しましょう。", "自分のペースを守ること。無理のない範囲で実行しましょう。変化を嫌って必要な対応まで遅らせないよう注意しましょう。"],key:"固執しない"},
+ {name:"ふたご座",start:[5,21],end:[6,21],advice:"情報を一度整理すること。聞いた話を確認せずに人へ伝えないようにしましょう。",variants:["情報を一度整理すること。聞いた話を確認せずに人へ伝えないようにしましょう。", "情報を一度整理すること。今日は一つずつ進めましょう。聞いた話を確認せずに人へ伝えないようにしましょう。", "情報を一度整理すること。焦って結論を出さないようにしましょう。聞いた話を確認せずに人へ伝えないようにしましょう。", "情報を一度整理すること。必要なら一度立ち止まって確認しましょう。聞いた話を確認せずに人へ伝えないようにしましょう。", "情報を一度整理すること。相手の話や周囲の状況も見ながら判断しましょう。聞いた話を確認せずに人へ伝えないようにしましょう。", "情報を一度整理すること。無理のない範囲で実行しましょう。聞いた話を確認せずに人へ伝えないようにしましょう。"],key:"確認する"},
+ {name:"かに座",start:[6,22],end:[7,22],advice:"感情だけで判断しないこと。相手の言葉を悪い意味に受け取りすぎないようにしましょう。",variants:["感情だけで判断しないこと。相手の言葉を悪い意味に受け取りすぎないようにしましょう。", "感情だけで判断しないこと。今日は一つずつ進めましょう。相手の言葉を悪い意味に受け取りすぎないようにしましょう。", "感情だけで判断しないこと。焦って結論を出さないようにしましょう。相手の言葉を悪い意味に受け取りすぎないようにしましょう。", "感情だけで判断しないこと。必要なら一度立ち止まって確認しましょう。相手の言葉を悪い意味に受け取りすぎないようにしましょう。", "感情だけで判断しないこと。相手の話や周囲の状況も見ながら判断しましょう。相手の言葉を悪い意味に受け取りすぎないようにしましょう。", "感情だけで判断しないこと。無理のない範囲で実行しましょう。相手の言葉を悪い意味に受け取りすぎないようにしましょう。"],key:"受け止める"},
+ {name:"しし座",start:[7,23],end:[8,22],advice:"自分の正しさを押し通しすぎないこと。今日は一歩引いて周囲を見る余裕を持ちましょう。",variants:["自分の正しさを押し通しすぎないこと。今日は一歩引いて周囲を見る余裕を持ちましょう。", "自分の正しさを押し通しすぎないこと。今日は一つずつ進めましょう。今日は一歩引いて周囲を見る余裕を持ちましょう。", "自分の正しさを押し通しすぎないこと。焦って結論を出さないようにしましょう。今日は一歩引いて周囲を見る余裕を持ちましょう。", "自分の正しさを押し通しすぎないこと。必要なら一度立ち止まって確認しましょう。今日は一歩引いて周囲を見る余裕を持ちましょう。", "自分の正しさを押し通しすぎないこと。相手の話や周囲の状況も見ながら判断しましょう。今日は一歩引いて周囲を見る余裕を持ちましょう。", "自分の正しさを押し通しすぎないこと。無理のない範囲で実行しましょう。今日は一歩引いて周囲を見る余裕を持ちましょう。"],key:"譲る"},
+ {name:"おとめ座",start:[8,23],end:[9,22],advice:"細部にこだわりすぎないこと。完璧を求めて予定を遅らせないようにしましょう。",variants:["細部にこだわりすぎないこと。完璧を求めて予定を遅らせないようにしましょう。", "細部にこだわりすぎないこと。今日は一つずつ進めましょう。完璧を求めて予定を遅らせないようにしましょう。", "細部にこだわりすぎないこと。焦って結論を出さないようにしましょう。完璧を求めて予定を遅らせないようにしましょう。", "細部にこだわりすぎないこと。必要なら一度立ち止まって確認しましょう。完璧を求めて予定を遅らせないようにしましょう。", "細部にこだわりすぎないこと。相手の話や周囲の状況も見ながら判断しましょう。完璧を求めて予定を遅らせないようにしましょう。", "細部にこだわりすぎないこと。無理のない範囲で実行しましょう。完璧を求めて予定を遅らせないようにしましょう。"],key:"ほどほどに"},
+ {name:"てんびん座",start:[9,23],end:[10,23],advice:"周囲に合わせすぎないこと。自分に必要なことを一つ決めて行動しましょう。",variants:["周囲に合わせすぎないこと。自分に必要なことを一つ決めて行動しましょう。", "周囲に合わせすぎないこと。今日は一つずつ進めましょう。自分に必要なことを一つ決めて行動しましょう。", "周囲に合わせすぎないこと。焦って結論を出さないようにしましょう。自分に必要なことを一つ決めて行動しましょう。", "周囲に合わせすぎないこと。必要なら一度立ち止まって確認しましょう。自分に必要なことを一つ決めて行動しましょう。", "周囲に合わせすぎないこと。相手の話や周囲の状況も見ながら判断しましょう。自分に必要なことを一つ決めて行動しましょう。", "周囲に合わせすぎないこと。無理のない範囲で実行しましょう。自分に必要なことを一つ決めて行動しましょう。"],key:"自分で決める"},
+ {name:"さそり座",start:[10,24],end:[11,22],advice:"一つのことを深く考えすぎないこと。分からないことは確認して前へ進みましょう。",variants:["一つのことを深く考えすぎないこと。分からないことは確認して前へ進みましょう。", "一つのことを深く考えすぎないこと。今日は一つずつ進めましょう。分からないことは確認して前へ進みましょう。", "一つのことを深く考えすぎないこと。焦って結論を出さないようにしましょう。分からないことは確認して前へ進みましょう。", "一つのことを深く考えすぎないこと。必要なら一度立ち止まって確認しましょう。分からないことは確認して前へ進みましょう。", "一つのことを深く考えすぎないこと。相手の話や周囲の状況も見ながら判断しましょう。分からないことは確認して前へ進みましょう。", "一つのことを深く考えすぎないこと。無理のない範囲で実行しましょう。分からないことは確認して前へ進みましょう。"],key:"考えすぎない"},
+ {name:"いて座",start:[11,23],end:[12,21],advice:"勢いで約束を増やさないこと。今日できることと後日に回すことを分けましょう。",variants:["勢いで約束を増やさないこと。今日できることと後日に回すことを分けましょう。", "勢いで約束を増やさないこと。今日は一つずつ進めましょう。今日できることと後日に回すことを分けましょう。", "勢いで約束を増やさないこと。焦って結論を出さないようにしましょう。今日できることと後日に回すことを分けましょう。", "勢いで約束を増やさないこと。必要なら一度立ち止まって確認しましょう。今日できることと後日に回すことを分けましょう。", "勢いで約束を増やさないこと。相手の話や周囲の状況も見ながら判断しましょう。今日できることと後日に回すことを分けましょう。", "勢いで約束を増やさないこと。無理のない範囲で実行しましょう。今日できることと後日に回すことを分けましょう。"],key:"広げすぎない"},
+ {name:"やぎ座",start:[12,22],end:[1,19],advice:"責任を一人で抱え込まないこと。必要なことは周囲に頼みましょう。",variants:["責任を一人で抱え込まないこと。必要なことは周囲に頼みましょう。", "責任を一人で抱え込まないこと。今日は一つずつ進めましょう。必要なことは周囲に頼みましょう。", "責任を一人で抱え込まないこと。焦って結論を出さないようにしましょう。必要なことは周囲に頼みましょう。", "責任を一人で抱え込まないこと。必要なら一度立ち止まって確認しましょう。必要なことは周囲に頼みましょう。", "責任を一人で抱え込まないこと。相手の話や周囲の状況も見ながら判断しましょう。必要なことは周囲に頼みましょう。", "責任を一人で抱え込まないこと。無理のない範囲で実行しましょう。必要なことは周囲に頼みましょう。"],key:"抱え込まない"},
+ {name:"みずがめ座",start:[1,20],end:[2,18],advice:"自分の考えだけで決めないこと。今日は身近な人の意見にも耳を傾けましょう。",variants:["自分の考えだけで決めないこと。今日は身近な人の意見にも耳を傾けましょう。", "自分の考えだけで決めないこと。今日は一つずつ進めましょう。今日は身近な人の意見にも耳を傾けましょう。", "自分の考えだけで決めないこと。焦って結論を出さないようにしましょう。今日は身近な人の意見にも耳を傾けましょう。", "自分の考えだけで決めないこと。必要なら一度立ち止まって確認しましょう。今日は身近な人の意見にも耳を傾けましょう。", "自分の考えだけで決めないこと。相手の話や周囲の状況も見ながら判断しましょう。今日は身近な人の意見にも耳を傾けましょう。", "自分の考えだけで決めないこと。無理のない範囲で実行しましょう。今日は身近な人の意見にも耳を傾けましょう。"],key:"聞く"},
+ {name:"うお座",start:[2,19],end:[3,20],advice:"気分に左右されすぎないこと。重要な判断は落ち着いてから行いましょう。",variants:["気分に左右されすぎないこと。重要な判断は落ち着いてから行いましょう。", "気分に左右されすぎないこと。今日は一つずつ進めましょう。重要な判断は落ち着いてから行いましょう。", "気分に左右されすぎないこと。焦って結論を出さないようにしましょう。重要な判断は落ち着いてから行いましょう。", "気分に左右されすぎないこと。必要なら一度立ち止まって確認しましょう。重要な判断は落ち着いてから行いましょう。", "気分に左右されすぎないこと。相手の話や周囲の状況も見ながら判断しましょう。重要な判断は落ち着いてから行いましょう。", "気分に左右されすぎないこと。無理のない範囲で実行しましょう。重要な判断は落ち着いてから行いましょう。"],key:"落ち着く"}
 ];
 
 function zodiacFor(date){
@@ -552,33 +541,52 @@ function yearPillar(date){
   return {stem:stems[i%10],branch:branches[i%12],animal:animals[i%12],animalIndex:i%12};
 }
 
-function simplePillarAdvice(dayIndex,zodiac){
-  const branch=branches[dayIndex%12];
-  const stem=stems[dayIndex%10];
-  const themes=[
-    ["確認","細かな確認を省略しないこと。"],
-    ["焦らない","結果を急がず、順番を守ること。"],
-    ["言葉","強い言い方を避け、丁寧に伝えること。"],
-    ["休む","無理を続けず、適度に休むこと。"],
-    ["整理","先に優先順位を決めること。"],
-    ["対話","一人で決めず、必要なら相談すること。"]
-  ];
-  const t=themes[(dayIndex+zodiac.name.length)%themes.length];
-  return {
-    text:`今日の日柱は「${stem}${branch}」です。今日のテーマは「${t[0]}」。`,
-    advice:t[1]
-  };
-}
 
+const pillarAdviceData = [{"theme": "確認", "advice": "細かな確認を省略せず、数字や約束を一度見直す"}, {"theme": "順序", "advice": "結果を急がず、優先順位を決めて一つずつ進める"}, {"theme": "言葉", "advice": "強い言い方を避け、相手に伝わる言葉を選ぶ"}, {"theme": "休息", "advice": "無理を続けず、集中力が落ちる前に小休止を取る"}, {"theme": "整理", "advice": "頭の中だけで考えず、やることを整理して見える形にする"}, {"theme": "対話", "advice": "一人で決めず、必要なことは信頼できる人に相談する"}, {"theme": "柔軟", "advice": "予定通りにいかないときも、方法を一つ変えてみる"}, {"theme": "境界", "advice": "人の問題を背負いすぎず、自分の役割を明確にする"}, {"theme": "継続", "advice": "大きな成果を急がず、今日できる小さな一歩を続ける"}, {"theme": "手放す", "advice": "終わったことへの執着を減らし、次に必要なことへ進む"}, {"theme": "節度", "advice": "やりすぎと先延ばしの両方を避け、ほどよい量にする"}, {"theme": "信頼", "advice": "疑う前に事実を確認し、必要なところでは人を信頼する"}];
+
+function simplePillarAdvice(dayIndex,zodiac,birth){
+  const yp=yearPillar(birth);
+  const birthIndex=(stems.indexOf(yp.stem)*12+branches.indexOf(yp.branch))%60;
+  const mix=(birthIndex*3+dayIndex+zodiac.name.length)%12;
+  const p=pillarAdviceData[mix];
+  return {text:`生年の干支は「${yp.stem}${yp.branch}（${yp.animal}）」です。今日のテーマは「${p.theme}」。`,advice:p.advice+"。",theme:p.theme};
+}
 function tarotImage(card){
-  return "https://commons.wikimedia.org/wiki/Special:FilePath/"
-    + encodeURIComponent(card.file) + "?width=500";
+  return "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(card.file)+"?width=500";
 }
-
-function chooseTarot(){
-  const card=tarotCards[Math.floor(Math.random()*tarotCards.length)];
-  const reversed=Math.random()<0.5;
-  return {card,reversed};
+function dateSeed(birth,today){
+  return Math.abs(birth.getFullYear()*10000+(birth.getMonth()+1)*100+birth.getDate()+today.getFullYear()*13+(today.getMonth()+1)*17+today.getDate()*19);
+}
+function chooseTarot(birth,today){
+  const seed=dateSeed(birth,today);
+  return {card:tarotCards[seed%tarotCards.length],reversed:Math.floor(seed/7)%2===1};
+}
+function zodiacAdviceFor(zodiac,birth,today){
+  const seed=dateSeed(birth,today);
+  const variants=zodiac.variants||[zodiac.advice];
+  return variants[seed%variants.length];
+}
+function buildJoePoint(tarot,zodiac,zodiacAdvice,pillar,birth,today,lang){
+  const tarotAdvice=tarot.reversed?tarot.card.reversed:tarot.card.upright;
+  const seed=dateSeed(birth,today);
+  if(lang==="ja"){
+    const arr=[
+      `今日のポイントは「${pillar.theme}」です。タロットは「${tarotAdvice}」と伝えています。星座からは「${zodiacAdvice}」。四柱推命からは「${pillar.advice}」。三つのメッセージを合わせると、今日は急いで結論を出さず、目の前のことを丁寧に進めることが大切です。`,
+      `今日のポイントは、${seed%2?"一度立ち止まって確認する":"落ち着いて一歩進む"}こと。タロットの「${tarotAdvice}」、星座の「${zodiacAdvice}」、四柱推命の「${pillar.advice}」を意識して過ごしてみましょう。`,
+      `今日のポイントは「自分のペースを整えること」です。タロットは「${tarotAdvice}」、星座は「${zodiacAdvice}」、四柱推命は「${pillar.advice}」と示しています。無理に急がず、必要なことから一つずつ進めましょう。`,
+      `今日のポイントは「確認してから決めること」です。三つの占いが示す「${tarotAdvice}」「${zodiacAdvice}」「${pillar.advice}」を重ねると、今日は一呼吸置くことが良い流れにつながりそうです。`,
+      `今日のポイントは「${pillar.theme}」。タロットの助言と星座のメッセージを合わせると、今日は「${zodiacAdvice}」ことを意識するとよいでしょう。${pillar.advice}。`
+    ];
+    return arr[seed%arr.length];
+  }
+  const en=[
+    `Today's point is to stay mindful of "${pillar.theme}." Tarot says: "${tarotAdvice}" Your zodiac message is: "${zodiacAdvice}" Four Pillars suggests: "${pillar.advice}" Taken together, today favors calm and deliberate action.`,
+    `Today's point is to pause and check before deciding. Tarot says "${tarotAdvice}". Your zodiac message is "${zodiacAdvice}". Four Pillars suggests "${pillar.advice}".`,
+    `Today's point is to keep your pace balanced. Tarot says "${tarotAdvice}". Your zodiac guidance is "${zodiacAdvice}". Four Pillars suggests "${pillar.advice}".`,
+    `Today's point is to handle one thing at a time. The Tarot, Zodiac, and Four Pillars messages all suggest paying attention before taking the next step.`,
+    `Today's point is "${pillar.theme}." Combine the Tarot message "${tarotAdvice}" with your zodiac guidance and Four Pillars advice, and take a thoughtful next step.`
+  ];
+  return en[seed%en.length];
 }
 
 
@@ -623,7 +631,7 @@ const I18N = {
     birthTitle:"あなたの生年月日",
     birthLabel:"生年月日",
     button:"今日の注意点を見る",
-    note:"生年月日から星座と四柱推命の基本情報を計算し、今日の注意点を表示します。",
+    note:"生年月日と今日の日付をもとに、タロット・星座・四柱推命の3つを組み合わせて、今日のポイントを提案します。",
     tarot:"タロット",
     horoscope:"星座占い",
     fourpillars:"四柱推命",
@@ -651,7 +659,7 @@ const I18N = {
     birthTitle:"Your Date of Birth",
     birthLabel:"Date of Birth",
     button:"See Today's Guidance",
-    note:"Your zodiac sign and basic Four Pillars of Destiny information are calculated from your date of birth.",
+    note:"Your date of birth and today's date are used to combine Tarot, Zodiac, and Four Pillars of Destiny into a personalized point for today.",
     tarot:"Tarot",
     horoscope:"Zodiac Horoscope",
     fourpillars:"Four Pillars of Destiny",
@@ -678,6 +686,17 @@ const I18N = {
 let currentLanguage="ja";
 let currentTarotReading=null;
 
+function updateTodayDate(){
+  const el=document.getElementById("todayDate");
+  if(!el) return;
+  const d=new Date();
+  if(currentLanguage==="ja"){
+    el.textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+  }else{
+    el.textContent=d.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+  }
+}
+
 function setLanguage(lang){
   currentLanguage=lang;
   const t=I18N[lang];
@@ -686,6 +705,7 @@ function setLanguage(lang){
 
   document.querySelector("h1").textContent=t.title;
   document.getElementById("subtitle").textContent=t.subtitle;
+  updateTodayDate();
 
   const firstCard=document.querySelector("#birth").closest(".card");
   firstCard.querySelector("h2").textContent=t.birthTitle;
@@ -728,7 +748,8 @@ function refreshDisplayedReading(){
   const zodiac=zodiacFor(birth);
   const dayIndex=sexagenaryDay(today);
   const yp=yearPillar(birth);
-  const pp=simplePillarAdvice(dayIndex,zodiac);
+  const pp=simplePillarAdvice(dayIndex,zodiac,birth);
+  const zodiacAdvice=zodiacAdviceFor(zodiac,birth,today);
 
   // Keep the already-selected tarot card and orientation across language changes.
   const card=(currentTarotReading && currentTarotReading.card) || tarotCards[0];
@@ -761,7 +782,7 @@ function refreshDisplayedReading(){
   document.getElementById("zodiacTitle").textContent=
     currentLanguage==="ja" ? zodiac.name : englishZodiacName(zodiac.name);
   document.getElementById("zodiacAdvice").textContent=
-    currentLanguage==="ja" ? zodiac.advice : englishZodiacAdvice(zodiac);
+    currentLanguage==="ja" ? zodiacAdvice : englishZodiacAdvice(zodiac);
 
   document.getElementById("pillarsText").textContent=
     currentLanguage==="ja"
@@ -778,17 +799,16 @@ function refreshDisplayedReading(){
     : englishKey(existingKey);
   finalKey.dataset.jaKey=existingKey;
 
-  document.getElementById("finalText").textContent=
-    currentLanguage==="ja"
-      ? document.getElementById("finalText").dataset.jaText || document.getElementById("finalText").textContent
-      : englishCombined(dayIndex,card.name,zodiac.name);
+  const joeText=buildJoePoint({card:card,reversed:reversed},zodiac,zodiacAdvice,pp,birth,today,currentLanguage);
+  document.getElementById("finalText").textContent=joeText;
+  if(currentLanguage==="ja") document.getElementById("finalText").dataset.jaText=joeText;
 
   document.getElementById("commonTarot").textContent=
-    currentLanguage==="ja" ? "落ち着いた確認" : "Calm checking";
+    currentLanguage==="ja" ? (reversed?"慎重に確認する":"落ち着いて進む") : (reversed?"Check carefully":"Move calmly");
   document.getElementById("commonZodiac").textContent=
     currentLanguage==="ja" ? zodiac.key : englishKey(zodiac.key);
   document.getElementById("commonPillar").textContent=
-    currentLanguage==="ja" ? pp.advice.split("。")[0] : englishPillarShort(pp);
+    currentLanguage==="ja" ? pp.theme : pp.theme;
 }
 
 function englishTarotAdvice(card,reversed){
@@ -887,11 +907,13 @@ function startReading(){
   const birth=new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]));
   const today=new Date();
   const zodiac=zodiacFor(birth);
-  const tarot=chooseTarot();
+  const tarot=chooseTarot(birth,today);
   currentTarotReading=tarot;
   const dayIndex=sexagenaryDay(today);
   const yp=yearPillar(birth);
-  const pp=simplePillarAdvice(dayIndex,zodiac);
+  const pp=simplePillarAdvice(dayIndex,zodiac,birth);
+  const zodiacAdvice=zodiacAdviceFor(zodiac,birth,today);
+  const joeTextJa=buildJoePoint(tarot,zodiac,zodiacAdvice,pp,birth,today,"ja");
 
   document.getElementById("results").classList.remove("hidden");
   document.getElementById("todayText").textContent=
@@ -908,43 +930,28 @@ function startReading(){
     tarot.reversed?tarot.card.reversed:tarot.card.upright;
 
   document.getElementById("zodiacTitle").textContent=zodiac.name;
-  document.getElementById("zodiacAdvice").textContent=zodiac.advice;
+  document.getElementById("zodiacAdvice").textContent=zodiacAdviceFor(zodiac,birth,today);
 
   document.getElementById("pillarsText").textContent=
     `あなたの生年は「${yp.stem}${yp.branch}（${yp.animal}）」です。`+
     ` 今日の日柱は「${stems[dayIndex%10]}${branches[dayIndex%12]}」。`;
   document.getElementById("pillarAdvice").textContent=pp.advice;
 
-  const tarotKey = tarot.reversed ? "慎重にする" :
-    ["確認する","急がない","言葉に注意","力を抜く","思い込みに注意"][tarot.card.name.length%5];
-  const keys=[tarotKey,zodiac.key,pp.advice.split("。")[0]];
-  const counts={};
-  keys.forEach(k=>counts[k]=(counts[k]||0)+1);
-  let finalKey=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
-
-  const combined=[
-    "今日は、すぐに答えを出さず、一度確認してから行動することを意識しましょう。",
-    "今日は、言葉や態度を少し穏やかにすることで、余計な行き違いを避けやすいでしょう。",
-    "今日は、焦って物事を進めるより、順番を守って一つずつ片付けることを意識しましょう。",
-    "今日は、自分だけで抱え込まず、必要なことは周囲に相談することを意識しましょう。",
-    "今日は、思い込みで判断せず、事実を確かめてから決めることを意識しましょう。"
-  ];
-  const finalText=combined[(dayIndex+tarot.card.name.length+zodiac.name.length)%combined.length];
-
+  const finalKey = pp.theme;
   document.getElementById("finalKey").textContent=finalKey;
   document.getElementById("finalKey").dataset.jaKey=finalKey;
-  document.getElementById("finalText").dataset.jaText=finalText;
-  document.getElementById("finalText").textContent=finalText;
-  document.getElementById("commonTarot").textContent=
-    tarot.reversed?"慎重な行動":"落ち着いた確認";
+  document.getElementById("finalText").dataset.jaText=joeTextJa;
+  document.getElementById("finalText").textContent=joeTextJa;
+  document.getElementById("commonTarot").textContent=tarot.reversed?"慎重に確認する":"落ち着いて進む";
   document.getElementById("commonZodiac").textContent=zodiac.key;
-  document.getElementById("commonPillar").textContent=pp.advice.split("。")[0];
+  document.getElementById("commonPillar").textContent=pp.theme;
 
   refreshDisplayedReading();
   setTimeout(()=>document.getElementById("results").scrollIntoView({behavior:"smooth"}),100);
 }
 
 window.addEventListener("load",()=>{
+  updateTodayDate();
   const d=new Date();
   const y=d.getFullYear()-50;
   document.getElementById("birth").value=
