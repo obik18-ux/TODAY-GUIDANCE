@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>今日のポイント｜タロット・ホロスコープ・四柱推命</title>
+<title>今日のポイント</title>
 <style>
 :root{
   --bg:#f6f0df; --paper:#fffdf6; --ink:#493f32; --gold:#b99648;
@@ -41,21 +41,21 @@ button:hover{filter:brightness(1.05)}
 .pillar{border:1px solid var(--line);border-radius:10px;text-align:center;padding:10px;background:#fbf8ec}
 .pillar .title{font-size:13px;color:#8b7650}.pillar .stem{font-size:26px}.pillar .branch{font-size:26px}
 .points{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.overallMessage{background:linear-gradient(135deg,#fbf6e8,#f1ead7);border:1px solid #c8b47d;border-radius:14px;padding:18px 20px;text-align:center;font-size:18px;line-height:1.9;color:#5c4b32}
+.overallMessage .label{font-size:14px;color:#8a7042;font-weight:bold;letter-spacing:.08em;margin-bottom:5px}
+.lucky{display:flex;justify-content:center;align-items:center;gap:12px;background:#f8f7ed;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px;font-size:20px}
+.lucky strong{color:#6b795f}
+.aiJoe{text-align:center;background:#f4efe4;border:1px solid #d5c6a5;border-radius:14px;padding:18px 20px;color:#66563f;font-size:16px}
 .point{border-left:5px solid var(--green);background:#f8f7ed;border-radius:10px;padding:14px}
 .point h3{margin:0 0 5px;color:#69795f;font-size:18px}
 .credit{font-size:11px;color:#8e816e;text-align:center;margin-top:15px}
 @media(max-width:760px){
  .formgrid,.resultgrid,.points{grid-template-columns:1fr}
  .pillars{grid-template-columns:repeat(2,1fr)}
+ .lucky{flex-direction:column;gap:4px}
  h1{font-size:30px}
 }
 </style>
-
-<meta name="description" content="タロット・ホロスコープ・四柱推命から、今日をより良く過ごすためのポイントをお届けします。男女関係・仕事・金銭・健康をチェックできます。">
-<meta property="og:title" content="今日のポイント｜タロット・ホロスコープ・四柱推命">
-<meta property="og:description" content="3つの占いから、今日のあなたへのメッセージと、男女関係・仕事・金銭・健康のポイントをお届けします。">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
 </head>
 <body>
 <div class="wrap">
@@ -79,6 +79,10 @@ button:hover{filter:brightness(1.05)}
 </section>
 
 <section id="results" class="hidden">
+<div class="panel">
+<h2>今日のあなたへのメッセージ</h2>
+<div id="overallMessage" class="overallMessage"><div class="label">今日のあなたへのメッセージ</div><div id="overallText"></div></div>
+</div>
 <div class="panel">
 <h2>タロット</h2>
 <div class="resultgrid">
@@ -104,8 +108,14 @@ button:hover{filter:brightness(1.05)}
 </div>
 
 <div class="panel">
-<h2>今日の4つのポイント</h2><div class="note"></div>
+<h2>今日をより良く過ごすためのアドバイス</h2>
 <div id="points" class="points"></div>
+<div class="lucky"><span>⭐ 今日のラッキーポイント</span><strong id="luckyPoint">—</strong></div>
+</div>
+
+<div class="panel">
+<h2>AIJOEからのひとこと</h2>
+<div class="aiJoe">占いは未来を決めるものではなく、今日をより良く過ごすためのヒントです。</div>
 </div>
 </section>
 </div>
@@ -359,6 +369,24 @@ const POINT_TEXTS = {"男女関係": ["相手の言葉を最後まで聞くと�
   });
 })();
 
+const OVERALL_MESSAGES = [
+ "今日は、急いで答えを出すより、目の前の人や出来事を丁寧に受け止めることで、良い流れが生まれる日です。",
+ "今日は小さな一歩を大切にすると、自然に次の展開が見えてきそうです。",
+ "無理に流れを変えようとせず、今できることを一つ整えることが、今日の良いスタートになります。",
+ "人との会話や何気ない気づきの中に、今日をより良くするヒントが見つかりそうです。",
+ "今日は『頑張ること』だけでなく、『整えること』にも目を向けたい日です。",
+ "焦らず自分のペースを守ることで、本来の力を発揮しやすい一日になりそうです。",
+ "思い通りにならないことがあっても、それをきっかけに別の良い方法が見つかるかもしれません。",
+ "今日は身近な人への気遣いが、自分自身にも良い流れを返してくれそうです。",
+ "一日の中で優先したいことを一つ決めると、気持ちも行動もすっきりしそうです.",
+ "今日は過去よりも『これからどうするか』に意識を向けると、前向きな流れを作りやすいでしょう。"
+];
+const LUCKY_POINTS = [
+ "人との会話","朝の整理整頓","短い散歩","感謝を言葉にすること","一つだけ先に片づけること",
+ "予定の見直し","昔から使っているもの","静かな時間","小さな約束を守ること","新しい情報を一つ取り入れること",
+ "机の上を整えること","早めの連絡","ゆっくりした食事","お気に入りの音楽","不要なものを一つ手放すこと"
+];
+
 function startReading(){
  const err=document.getElementById("error"),birth=document.getElementById("birth").value;
  err.style.display="none";
@@ -394,6 +422,8 @@ function startReading(){
    return [category,list[Math.floor(rnd(seed)*list.length)]];
  });
  document.getElementById("points").innerHTML=set.map(p=>`<div class="point"><h3>${p[0]}</h3><div>${p[1]}</div></div>`).join("");
+document.getElementById("overallText").textContent=OVERALL_MESSAGES[Math.floor(rnd(seed)*OVERALL_MESSAGES.length)];
+document.getElementById("luckyPoint").textContent=LUCKY_POINTS[Math.floor(rnd(seed)*LUCKY_POINTS.length)];
  document.getElementById("results").classList.remove("hidden");
  setTimeout(()=>document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"}),30);
 }
